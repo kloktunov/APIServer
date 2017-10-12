@@ -68,22 +68,23 @@ var main = (function (){
 								2.2. Проверяем параметры из списка
 									- Тип
 									- Обязательная или нет
-									- etc.
+									- Условия
 						*/
 
 
 						var methodSchema = global.APIServer.API.schema.classes[class_name].methods[method_name];
 						var paramsSchema = methodSchema.params;
 
+						if(methodSchema.is_admin) methodSchema.is_auth = true;
 						if(methodSchema.is_auth) methodSchema.is_db = true;
 
 						var db_client;
 						var account = {
 							id: -1,
 							app: {
-								id: -1,
+								id: 1,
 								name: "system",
-								access: [ "root" ]
+								access: [ "system" ]
 							},
 							is_admin: false,
 							token: ""
@@ -94,7 +95,7 @@ var main = (function (){
 						var checker = {
 
 							start: function (){
-
+								checker.isDB();
 							},
 
 
@@ -103,6 +104,8 @@ var main = (function (){
 								if(methodSchema.is_db){
 									db_client = global.APIServer.Core.db.createClient();
 								}
+
+								checker.isAuth();
 
 							},
 
@@ -119,32 +122,65 @@ var main = (function (){
 										return;
 									}
 
+
+									global.APIServer.Core.getAccount(token_param, db_client, checker.checkAccount);
+									return;
 								}
+
+								checker.checkAccount(null);
+
+							},
+
+							checkAccount: function (acc){
+
+								if(acc 	== null && methodSchema.is_auth){
+									// не авторизован
+									callback(2);
+									return;
+								}
+
+								account = acc;
+
+								checker.isAdmin();
 
 							},
 
 							isAdmin: function (){
 								// Если метод только для администраторов
-								if(methodSchema.is_admin){
-
-									
-										
+								if(!methodSchema.is_admin){
+									checker.paramsCheck();
+									return;					
 								}
+
+								if(account.is_admin == false){
+
+									// метод только для админов. нет доступа
+									callback(2);
+									return;
+
+								}
+
+								checker.paramsCheck();
 
 							},
 
 
 							paramsCheck: function(){
 
-								for(param in paramsSchema){
+								for(param_name in paramsSchema){
 
+									var param = paramsSchema[param_name];
 									var qParam = params[param.name];
 
-									if(qParam == undefined && param.optional == false){
+									if((qParam == null || qParam == undefined) && param.optional == false){
 
 										// Нет обязательной переменной
 										callback(2);
 										return;
+									}
+
+									if(qParam == null){
+										continue;
 									}
 
 									switch(param.type){
@@ -157,16 +193,110 @@ var main = (function (){
 												return;
 
 											}
-
-
 										break;
 										case 2:
 											// string
 										break;
 									}
 
+									/*
+										Проверяем conditions
+									*/
+
+									var conditions = param.conditions;
+									for(cond in conditions){
+
+										switch(cond.type){
+											case 'min_limit':
+
+												if(param.type !== 1){
+													// Невыполненно условие
+													callback(2);
+													return;
+												}
+
+												if(qParam < cond.min){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											case 'max_limit':
+
+												if(param.type !== 1){
+													// Невыполненно условие
+													callback(2);
+													return;
+												}
+
+												if(qParam > cond.max){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											case 'interval':
+
+												if(param.type !== 1){
+													// Невыполненно условие
+													callback(2);
+													return;
+												}
+
+												if(qParam < cond.min || qParam > cond.max){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											case 'interval':
+
+												if(param.type !== 1){
+													// Невыполненно условие
+													callback(2);
+													return;
+												}
+
+												if(qParam < cond.min || qParam > cond.max){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											case 'min_length':
+
+												if(qParam.length < cond.min){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											case 'max_length':
+
+												if(qParam.length > cond.max){
+													// Невыполненно условие
+													callback(2);
+													return;														
+												}
+
+											break;
+											default:
+												console.log('not support: ' + cond.type);
+											break;
+										}
+
+									}
+
 									apiParams[param.name] = qParam;
 								}
+
+
+								checker.finish();
 
 
 							},
@@ -188,12 +318,7 @@ var main = (function (){
 					db: {
 						mysql: require('mysql'),
 						
-						config: {
-							host: '127.0.0.1',
-							user: 'root',
-							password: '',
-							database: 'QAuth'							
-						},
+						config: require('./Config/db_config.js'),
 
 						createClient: function (){
 							var c = global.APIServer.Core.db.mysql.createConnection(global.APIServer.Core.db.config);
@@ -204,15 +329,24 @@ var main = (function (){
 					},
 
 					getAccount: function (token, db_client, callback){
-
-						db_client.query('SELECT * FROM accounts WHERE hash=?', auth_hash, function (err, rows, fields) {
+						db_client.query('SELECT tokens.user_id, tokens.app_id, apps.name AS app_name, apps.access AS app_access, accounts.admin, tokens.token FROM accounts, apps, tokens WHERE apps.id = tokens.app_id AND accounts.id = tokens.user_id AND tokens.token = ?', token, function (err, rows, fields) {
 							if(err || rows.length == 0){
 								callback(null);
+								return;
 							}
-	
-							callback(rows[0].id);							
-	
-							db_client.end();
+
+							var account = {
+								id: rows[0].user_id,
+								app: {
+									id: rows[0].app_id,
+									name: rows[0].app_name,
+									access: rows[0].app_access.split(',')
+								},
+								is_admin: (rows[0].admin == 1),
+								token: rows[0].token
+							};
+
+							callback(account);					
 						});									
 
 					},
@@ -233,6 +367,7 @@ var main = (function (){
 		},
 
 		getClassList: function (){
+
 			var classes = {
 
 			};

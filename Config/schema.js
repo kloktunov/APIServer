@@ -22,6 +22,66 @@ var schema = {
 			}
 		},
 
+		accounts: {
+			name: "accounts",
+			description: "Класс содержит методы для работы с аккаунтом",
+
+			methods: {
+				get: {
+					name: "get",
+					description: "Получает информацию об аккаунте",
+
+					is_auth: true,
+					is_admin: false,
+					is_db: true,
+
+					params: {
+
+					}
+
+				},
+
+				getSessions: {
+					name: "getSessions",
+					description: "Содержит список последних сессий пользователя",
+
+					is_auth: true,
+					is_admin: false,
+					is_db: true,
+
+					params: {
+
+						offset: {
+							name: "offset",
+							description: "Стартовая позиция",
+
+							type: 1,
+
+							optional: false,
+
+							conditions: [
+
+							]
+						},
+
+						count: {
+							name: "count",
+							description: "Количество строк",
+
+							type: 1,
+
+							optional: false,
+
+							conditions: [
+
+							]
+						}
+
+					}
+				}
+			}	
+		},
+
 		users: {
 			name: "users",
 			description: "Класс содержит в себе методы для работы с пользователями",
@@ -42,7 +102,11 @@ var schema = {
 
 							type: 1,
 
-							optional: false
+							optional: false,
+
+							conditions: [
+
+							]
 
 						}
 					}
