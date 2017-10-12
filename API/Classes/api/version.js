@@ -1,4 +1,4 @@
-var mAPI = function (params, cb){
+var mAPI = function (params, account, db_client, cb){
 
 	global.APIServer.Core.classes.api.version(function (data){
 
