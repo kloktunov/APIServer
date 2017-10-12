@@ -36,7 +36,18 @@ var schema = {
 					is_db: true,
 
 					params: {
+						offset: {
+							name: "offset",
+							description: "Стартовая позиция",
 
+							type: 2,
+
+							optional: false,
+
+							conditions: [
+
+							]
+						},
 					}
 
 				},
@@ -61,6 +72,11 @@ var schema = {
 
 							conditions: [
 
+								{
+									type: 'min_limit',
+									min: 0
+								}
+
 							]
 						},
 
@@ -73,6 +89,11 @@ var schema = {
 							optional: false,
 
 							conditions: [
+
+								{
+									type: 'max_limit',
+									max: 100
+								}
 
 							]
 						}

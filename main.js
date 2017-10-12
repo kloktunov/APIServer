@@ -186,7 +186,8 @@ var main = (function (){
 									switch(param.type){
 										case 1:
 											// int
-											if(!(/^\+?(0|[1-9]\d*)$/.test(qParam))){
+											qParam = parseInt(qParam);
+											if(qParam == null || isNaN(qParam)){
 
 												// Несоответсвие типов
 												callback(2);
@@ -197,6 +198,9 @@ var main = (function (){
 										case 2:
 											// string
 										break;
+										case 3:
+											// array
+										break;
 									}
 
 									/*
@@ -204,8 +208,9 @@ var main = (function (){
 									*/
 
 									var conditions = param.conditions;
-									for(cond in conditions){
+									for(var i = 0, length = conditions.length; i < length; i++){
 
+										var cond = conditions[i];
 										switch(cond.type){
 											case 'min_limit':
 
@@ -231,21 +236,6 @@ var main = (function (){
 												}
 
 												if(qParam > cond.max){
-													// Невыполненно условие
-													callback(2);
-													return;														
-												}
-
-											break;
-											case 'interval':
-
-												if(param.type !== 1){
-													// Невыполненно условие
-													callback(2);
-													return;
-												}
-
-												if(qParam < cond.min || qParam > cond.max){
 													// Невыполненно условие
 													callback(2);
 													return;														
