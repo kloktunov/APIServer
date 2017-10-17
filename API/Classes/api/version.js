@@ -4,7 +4,7 @@ var mAPI = function (params, account, db_client, cb){
 
 		var api_response = data;
 
-		cb(global.APIServer.API.renderResponse(0, api_response));
+		cb(global.APIServer.API.renderResponse(0, "api", "version", api_response));
 
 	});
 

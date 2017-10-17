@@ -13,10 +13,10 @@ var main = (function (){
 
 				API: {
 
-					schema: require('./Config/schema.js'),
+					schema: require('./Config/schema.json'),
 
 					// status = 0/1, response
-					renderResponse: function (status, response){
+					renderResponse: function (status, class_name, method_name, response){
 
 						if(status == 0){
 							return {
@@ -242,21 +242,6 @@ var main = (function (){
 												}
 
 											break;
-											case 'interval':
-
-												if(param.type !== 1){
-													// Невыполненно условие
-													callback(2);
-													return;
-												}
-
-												if(qParam < cond.min || qParam > cond.max){
-													// Невыполненно условие
-													callback(2);
-													return;														
-												}
-
-											break;
 											case 'min_length':
 
 												if(qParam.length < cond.min){
@@ -308,7 +293,7 @@ var main = (function (){
 					db: {
 						mysql: require('mysql'),
 						
-						config: require('./Config/db_config.js'),
+						config: require('./Config/db.json'),
 
 						createClient: function (){
 							var c = global.APIServer.Core.db.mysql.createConnection(global.APIServer.Core.db.config);
