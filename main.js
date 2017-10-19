@@ -200,6 +200,8 @@ var main = (function (){
 										break;
 										case 3:
 											// array
+											qParam = qParam.split(',');
+
 										break;
 									}
 
