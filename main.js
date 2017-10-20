@@ -110,30 +110,22 @@ var main = (function (){
 							},
 
 							isAuth: function (){
-								// Если требуется авторизация
-								if(methodSchema.is_auth){
-									
-									var token_param = params["token"];
+								var token_param = params["token"];
 
-									if(token_param == undefined){
+								if(token_param == undefined){
 
-										// нет параметра с токеном
-										callback(2);
-										return;
-									}
-
-
-									global.APIServer.Core.getAccount(token_param, db_client, checker.checkAccount);
+									checker.checkAccount(null);
 									return;
+
 								}
 
-								checker.checkAccount(null);
-
+								global.APIServer.Core.getAccount(token_param, db_client, checker.checkAccount);
 							},
 
 							checkAccount: function (acc){
 
-								if(acc 	== null && methodSchema.is_auth){
+								// если acc = null и is_auth = true, то не авторизован
+								if(acc == null && methodSchema.is_auth){
 									// не авторизован
 									callback(2);
 									return;
@@ -279,7 +271,19 @@ var main = (function (){
 							},
 
 							finish: function (){
-								global.APIServer.API.classes[class_name][method_name](apiParams, account, db_client, callback);
+
+
+								global.APIServer.API.classes[class_name][method_name](apiParams, class_name, method_name, account, db_client, function (data){
+
+									// if data is int - error
+									if(!isNaN(parseInt(data))){
+										callback(global.APIServer.API.renderResponse(1, class_name, method_name, data));
+										return;
+									}
+
+									callback(global.APIServer.API.renderResponse(0, class_name, method_name, data));
+
+								});
 							}
 
 						}

@@ -1,13 +1,6 @@
-var mAPI = function (params, account, db_client, cb){
+var mAPI = function (params, class_name, method_name, account, db_client, cb){
 
-	global.APIServer.Core.classes.api.version(function (data){
-
-		var api_response = data;
-
-		cb(global.APIServer.API.renderResponse(0, "api", "version", api_response));
-
-	});
-
+	global.APIServer.Core.classes[class_name][method_name](cb);
 };
 
 module.exports = mAPI;

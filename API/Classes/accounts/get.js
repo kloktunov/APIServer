@@ -1,13 +1,6 @@
-var mAPI = function (params, account, db_client, cb){
-	var callback = function (data){
+var mAPI = function (params, class_name, method_name, account, db_client, cb){
 
-		var api_response = data;
-
-		cb(global.APIServer.API.renderResponse(0, "accounts", "get", api_response));
-
-	};
-
-	global.APIServer.Core.classes.accounts.get(account, db_client, callback);
+	global.APIServer.Core.classes[class_name][method_name](account, cb);
 };
 
 module.exports = mAPI;

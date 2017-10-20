@@ -74,7 +74,7 @@ var m = function (login, hash, salt, app_id, db_client, cb){
 	// response
 	cb({
 
-		app_id: 
+		app_id: 1
 
 	});
 };
