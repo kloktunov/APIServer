@@ -1,16 +1,10 @@
-var m = function (cb){
-
-	var version = "0.1";
-	var project_name = "Test project";
+var m = function (__account, __cb){
 
 	// response
-	cb({
-
-		project_name: project_name,
-		version: version
-
+	__cb({
+		version: "1.0"
 	});
-};
+}
 
 
 module.exports = m;

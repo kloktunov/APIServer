@@ -147,7 +147,7 @@ var main = (function (){
 								if(account.is_admin == false){
 
 									// метод только для админов. нет доступа
-									callback(2);
+									callback(3);
 									return;
 
 								}
@@ -167,7 +167,7 @@ var main = (function (){
 									if((qParam == null || qParam == undefined) && param.optional == false){
 
 										// Нет обязательной переменной
-										callback(2);
+										callback(4);
 										return;
 									}
 
@@ -182,7 +182,7 @@ var main = (function (){
 											if(qParam == null || isNaN(qParam)){
 
 												// Несоответсвие типов
-												callback(2);
+												callback(5);
 												return;
 
 											}
@@ -210,13 +210,14 @@ var main = (function (){
 
 												if(param.type !== 1){
 													// Невыполненно условие
-													callback(2);
+													callback(6);
+													console.log(param);
 													return;
 												}
 
 												if(qParam < cond.min){
 													// Невыполненно условие
-													callback(2);
+													callback(7);
 													return;														
 												}
 
@@ -225,13 +226,13 @@ var main = (function (){
 
 												if(param.type !== 1){
 													// Невыполненно условие
-													callback(2);
+													callback(8);
 													return;
 												}
 
 												if(qParam > cond.max){
 													// Невыполненно условие
-													callback(2);
+													callback(9);
 													return;														
 												}
 
@@ -240,7 +241,7 @@ var main = (function (){
 
 												if(qParam.length < cond.min){
 													// Невыполненно условие
-													callback(2);
+													callback(10);
 													return;														
 												}
 
@@ -249,7 +250,7 @@ var main = (function (){
 
 												if(qParam.length > cond.max){
 													// Невыполненно условие
-													callback(2);
+													callback(11);
 													return;														
 												}
 
@@ -274,6 +275,10 @@ var main = (function (){
 
 
 								global.APIServer.API.classes[class_name][method_name](apiParams, class_name, method_name, account, db_client, function (data){
+
+									if(db_client != null){
+										db_client.end();
+									}
 
 									// if data is int - error
 									if(!isNaN(parseInt(data))){
