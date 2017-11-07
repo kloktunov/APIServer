@@ -7,6 +7,24 @@ var HTTServer = {
 		var express = require('express');
 		var app = express();
 
+		app.get('/oauth/authorize', function(req, res){
+
+			// установка приложения
+			res.end("Страница авторизации");
+		});
+
+		app.get('/oauth/aссess_token', function(req, res){
+
+			// получение токена
+			res.end("Страница авторизации");
+		});
+
+		app.get('/oauth/blank.html', function(req, res){
+
+			// blank.html для получения request_code
+			res.end("Страница авторизации");
+		});
+
 		app.get('/api/:class_name([a-zA-Z]+).:method_name([a-zA-Z]+)', function(req, res){
 			
 			// ограничваем количество параметров
