@@ -1,4 +1,4 @@
-/*
+var m = function (id, __account, __db_client, __cb){/*
 		1. Проверить наличие приложения
 		2. Проверить установленно ли приложение
 		3. Сделать запись в БД
@@ -80,5 +80,6 @@
 	}
 
 	checker.checkApp();
+}
 
 module.exports = m;

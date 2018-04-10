@@ -13,3 +13,26 @@ for (x in urls) {
 
 	console.log(domain + ":" + domainRegex.test(domain));
 }
+
+classes = {
+
+	users: {
+
+		get: {
+
+			fields: [
+				{
+					type: "int",
+					is_array: false
+					name: "id",
+				}
+
+			]
+
+		}
+
+
+	}
+
+
+}

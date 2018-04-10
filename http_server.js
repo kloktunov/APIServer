@@ -1,5 +1,4 @@
-
-
+var fs = require('fs');
 
 var HTTServer = {
 
@@ -9,14 +8,20 @@ var HTTServer = {
 
 		app.get('/oauth/authorize', function(req, res){
 
-			// установка приложения
-			res.end("Страница авторизации");
+			var authorize = require('OAuth/Pages/authorize.js');
+
+			authorize(req, function (status, html){
+				res.end(html);
+			});
 		});
 
 		app.get('/oauth/aссess_token', function(req, res){
 
-			// получение токена
-			res.end("Страница авторизации");
+			var access_token = require('OAuth/Pages/access_token.js');
+
+			access_token(req, function (status, html){
+				res.end(html);
+			});
 		});
 
 		app.get('/oauth/blank.html', function(req, res){

@@ -85,7 +85,6 @@ var m = function (id, name, access, description, redirect_uri, __account, __db_c
 			__cb({
 				changed: 1
 			});
-
 		}
 
 	}

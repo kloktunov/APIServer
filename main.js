@@ -18,10 +18,13 @@ var main = (function (){
 					// status = 0/1, response
 					renderResponse: function (status, class_name, method_name, response){
 
+
 						if(status == 0){
+							var final_response = global.APIServer.Core.renderResponse.render(class_name, method_name, response);
+							console.log(final_response);
 							return {
 								status: 'success',
-								response: response
+								response: final_response
 							}
 						} else {
 							return {
@@ -87,7 +90,7 @@ var main = (function (){
 								access: [ "system" ]
 							},
 							is_admin: false,
-							token: ""
+							access_token: ""
 						};
 
 						var apiParams = {};
@@ -110,7 +113,7 @@ var main = (function (){
 							},
 
 							isAuth: function (){
-								var token_param = params["token"];
+								var token_param = params["access_token"];
 
 								if(token_param == undefined){
 
@@ -225,6 +228,7 @@ var main = (function (){
 											case 'max_limit':
 
 												if(param.type !== 1){
+													console.log(param);
 													// Невыполненно условие
 													callback(8);
 													return;
@@ -329,7 +333,7 @@ var main = (function (){
 									access: rows[0].app_access.split(',')
 								},
 								is_admin: (rows[0].admin == 1),
-								token: rows[0].token
+								access_token: rows[0].token
 							};
 
 							callback(account);					
@@ -346,6 +350,7 @@ var main = (function (){
 
 
 			global.APIServer.Core.classes = this.getClassList();
+			global.APIServer.Core.renderResponse = require('./Core/Responses/renderResponse');
 			global.APIServer.API.classes = this.getApiList();
 
 			cb();
